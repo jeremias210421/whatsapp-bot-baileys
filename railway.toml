@@ -1,3 +1,6 @@
-version: "2"
-builder: DOCKERFILE
-dockerfilePath: Dockerfile
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "npm start"
