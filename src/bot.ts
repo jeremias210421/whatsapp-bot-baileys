@@ -747,12 +747,15 @@ let sock: WASocket | undefined;
 // ─────────────────────────────────────────────────────────────
 // Start bot
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// Start bot
+// ─────────────────────────────────────────────────────────────
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState(AUTH_FOLDER);
 
     sock = makeWASocket({
         auth: state,
-        printQRInTerminal: true,
+        printQRInTerminal: false, // Fix: Deprecated option removed
         logger: pino({ level: "info" }) as any,
     });
 
@@ -765,7 +768,14 @@ async function startBot() {
 
         if (qr) {
             currentQR = qr;
-            logger.info("📱 New QR Code generated. Visit the web view to scan.");
+            logger.info("📱 QR Code received from Baileys");
+
+            // Print QR to terminal for Railway logs
+            // Use small: true for better fit in narrow logs
+            require("qrcode-terminal").generate(qr, { small: true }, (qrcode: string) => {
+                console.log("\n" + qrcode + "\n");
+                logger.info("Scan the QR code above to login!");
+            });
         }
 
         if (connection === "close") {
@@ -776,7 +786,7 @@ async function startBot() {
 
             if (shouldReconnect) {
                 logger.info("🔄 Reconnecting...");
-                startBot();
+                setTimeout(startBot, 2000); // Add small delay before reconnect
             } else {
                 logger.error("🚪 Logged out. Cleaning up session and restarting...");
                 // Clean up auth folder to prevent loop
