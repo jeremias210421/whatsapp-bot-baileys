@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-Na primeira execução, um QR code será exibido no terminal. Escaneie com o WhatsApp do celular que será usado pelo bot.
+O servidor web será iniciado em [http://localhost:3000](http://localhost:3000). Acesse essa URL para ver o QR Code e escanear com seu WhatsApp.
 
 ## Credenciais do Projeto
 
@@ -37,7 +37,7 @@ Na primeira execução, um QR code será exibido no terminal. Escaneie com o Wha
 2. Conecte o repositório Git ou faça upload do código
 3. Adicione as variáveis de ambiente (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`)
 4. O Railway detectará o `Dockerfile` e fará o build automaticamente
-5. Após o deploy, acesse os logs para escanear o QR code
+5. A aplicação abrirá automaticamente a porta 3000. Acesse a **URL Pública** do seu serviço no Railway para visualizar o QR Code.
 
 > **Importante**: Para persistir a sessão entre deploys, configure um volume no Railway apontando para `/app/auth_state`.
 

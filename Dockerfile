@@ -18,4 +18,5 @@ RUN npm run build
 ENV NODE_ENV=production
 
 # Start the bot
+EXPOSE 3000
 CMD ["npm", "start"]
