@@ -154,10 +154,11 @@ const server = http.createServer(async (req, res) => {
 
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ status: "sent", jid, message }));
-            } catch (err) {
-                logger.error({ err }, "Failed to send message via API");
+            } catch (err: any) {
+                const errorMessage = err?.message || err?.toString() || "Unknown error";
+                logger.error({ err, errorMessage }, "Failed to send message via API");
                 res.writeHead(500, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: "Internal Server Error" }));
+                res.end(JSON.stringify({ error: "Internal Server Error", details: errorMessage }));
             }
         });
         return;
