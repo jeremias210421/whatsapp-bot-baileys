@@ -184,7 +184,10 @@ const server = http.createServer(async (req, res) => {
                 const fileName = `sim_outbound_${Date.now()}.webm`;
                 const filePath = path.join(MEDIA_FOLDER, fileName);
                 await writeFile(filePath, audioBuffer);
-                const publicUrl = `http://localhost:${PORT}/media/${fileName}`;
+                const domain = process.env.RAILWAY_PUBLIC_DOMAIN
+                    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+                    : `http://localhost:${PORT}`;
+                const publicUrl = `${domain}/media/${fileName}`;
 
                 logger.info({ to: jid }, "📤 [SIMULATED] API Audio sent");
 
@@ -259,7 +262,10 @@ const server = http.createServer(async (req, res) => {
                 const fileName = `outbound_${Date.now()}.webm`;
                 const filePath = path.join(MEDIA_FOLDER, fileName);
                 await writeFile(filePath, audioBuffer);
-                const publicUrl = `http://localhost:${PORT}/media/${fileName}`;
+                const domain = process.env.RAILWAY_PUBLIC_DOMAIN
+                    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+                    : `http://localhost:${PORT}`;
+                const publicUrl = `${domain}/media/${fileName}`;
 
                 // Save to Supabase
                 await saveMessage(jid, "[Audio Sent]", "outbound", "audio", publicUrl);
