@@ -445,6 +445,18 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
+    // Debug endpoint
+    if (req.url === "/debug-env") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({
+            url: process.env.SUPABASE_URL,
+            keyLen: process.env.SUPABASE_SERVICE_ROLE_KEY?.length,
+            keyStart: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10),
+            keyEnd: process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(-5)
+        }));
+        return;
+    }
+
     res.writeHead(404);
     res.end("Not Found");
 });
