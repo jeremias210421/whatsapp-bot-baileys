@@ -486,13 +486,44 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Debug endpoint
-    if (req.url === "/debug-env") {
+    if (req.url?.startsWith("/debug-env")) {
+        let dbStatus = "CHECKING";
+        let dbError = null;
+        try {
+            if (req.url.includes("type=write")) {
+                const { error } = await supabase.from('messages').insert({
+                    from_number: 'DEBUG_PROBE',
+                    body: 'Write Test ' + new Date().toISOString(),
+                    direction: 'inbound',
+                    status: 'sent'
+                });
+                if (error) {
+                    dbStatus = "WRITE_ERROR";
+                    dbError = error.message + " | Details: " + JSON.stringify(error);
+                } else {
+                    dbStatus = "WRITE_OK";
+                }
+            } else {
+                const { count, error } = await supabase.from('messages').select('*', { count: 'exact', head: true });
+                if (error) {
+                    dbStatus = "READ_ERROR";
+                    dbError = error.message;
+                } else {
+                    dbStatus = `READ_OK (Rows: ${count})`;
+                }
+            }
+        } catch (e: any) {
+            dbStatus = "EXCEPTION";
+            dbError = e.message;
+        }
+
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({
             url: process.env.SUPABASE_URL,
+            activeUrl: supabaseUrl,
             keyLen: process.env.SUPABASE_SERVICE_ROLE_KEY?.length,
-            keyStart: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10),
-            keyEnd: process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(-5)
+            dbStatus,
+            dbError
         }));
         return;
     }
