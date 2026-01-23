@@ -62,8 +62,8 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(async (req, res) => {
     // Headers for CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Bypass-Tunnel-Reminder");
 
     if (req.method === "OPTIONS") {
         res.writeHead(204);
