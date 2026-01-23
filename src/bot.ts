@@ -21,8 +21,18 @@ import { askAI } from './services/ai';
 // ─────────────────────────────────────────────────────────────
 // Supabase setup
 // ─────────────────────────────────────────────────────────────
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// ─────────────────────────────────────────────────────────────
+// Supabase setup
+// ─────────────────────────────────────────────────────────────
+let supabaseUrl = process.env.SUPABASE_URL;
+let supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// WORKAROUND: Force MobDrive if Railway persists with old env
+if (supabaseUrl && supabaseUrl.includes("mfsuhrtvertzoggvlwxv")) {
+    console.warn("⚠️ DETECTED WRONG ENV VAR. FORCING MOBDRIVE CREDENTIALS.");
+    supabaseUrl = "https://eqbyygubokilrvvxdptx.supabase.co";
+    supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxYnl5Z3Vib2tpbHJ2dnhkcHR4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDk2NzcwMCwiZXhwIjoyMDY2NTQzNzAwfQ.pEPTm5E73kPv2MIpnqYW5DVM4ns78Lded8jKRFXWtTc";
+}
 
 if (!supabaseUrl || !supabaseKey) {
     console.error("❌ SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set");
