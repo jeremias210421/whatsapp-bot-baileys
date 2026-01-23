@@ -126,12 +126,42 @@ const server = http.createServer(async (req, res) => {
 
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ status: "simulated", jid, message }));
-            } catch (err) {
+            } catch (err: any) {
                 logger.error({ err }, "Failed to simulate message");
                 res.writeHead(500, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: "Internal Server Error" }));
+                res.end(JSON.stringify({ error: "Internal Server Error", details: err?.message || String(err) }));
             }
         });
+        return;
+    }
+
+    // ... (keep /send and others as is, only change debug-env below)
+
+    // Debug endpoint
+    if (req.url === "/debug-env") {
+        let dbStatus = "CHECKING";
+        let dbError = null;
+        try {
+            const { count, error } = await supabase.from('messages').select('*', { count: 'exact', head: true });
+            if (error) {
+                dbStatus = "ERROR";
+                dbError = error.message;
+            } else {
+                dbStatus = `OK (Rows: ${count})`;
+            }
+        } catch (e: any) {
+            dbStatus = "EXCEPTION";
+            dbError = e.message;
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({
+            url: process.env.SUPABASE_URL,
+            activeUrl: supabaseUrl, // Show the actual URL being used (from workaround or env)
+            keyLen: process.env.SUPABASE_SERVICE_ROLE_KEY?.length,
+            dbStatus,
+            dbError
+        }));
         return;
     }
 
